@@ -55,7 +55,7 @@ module.exports = {
     extensions: ['.js'],
   },
   plugins: [
-    new CleanWebpackPlugin({ paths: ['./dist/', './dist-zip/'] }),
+    new CleanWebpackPlugin({ paths: ['./dist-zip/'] }),
     new CopyWebpackPlugin([
       { from: 'assets', to: 'assets' },
       { from: 'manifest.json', to: 'manifest.json', flatten: true },

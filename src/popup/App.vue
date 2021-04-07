@@ -1,25 +1,23 @@
 <template>
   <div class="section">
-    <p class="menu-label is-size-5">Requests</p>
-    <span class="is-size-7">
-      Click domain to choose proxy for that domain or visit
-      <a
-        href="./options.html"
-        target="_blank"
-      >Options</a> to choose a default
+    <!-- <p class="menu-label is-size-5">Requests</p> -->
+    <span class="is-size-6">
+      Click domain to choose proxy for that specific domain or visit
+      <a href="./options.html" target="_blank">Options</a> to choose a default
       for all domains.
     </span>
-    <hr>
+    <hr />
     <template v-if="preferences">
       <p class="control">
         <input
+          ref="filter"
           v-model="domainFilter"
           class="input is-small"
           type="text"
           placeholder="Filter domains"
-        >
+        />
       </p>
-      <br>
+      <br />
       <transition-group name="list-out" appear tag="ul">
         <li v-for="domain in filteredDomains" :key="domain">
           <div
@@ -38,45 +36,50 @@
                     <span>{{ domain }}</span>
                   </div>
                   <div class="column">
-                    <span
-                      class="has-text-grey-lighter is-pulled-right"
-                    >{{ defaultProxyForDomain(domain) }}</span>
+                    <span class="has-text-grey-lighter is-pulled-right">{{
+                      defaultProxyForDomain(domain)
+                    }}</span>
                   </div>
                 </div>
               </button>
             </div>
-            <div :id="'dropdown-menu-' + domain" class="dropdown-menu" role="menu">
+            <div
+              :id="'dropdown-menu-' + domain"
+              class="dropdown-menu"
+              role="menu"
+            >
               <div class="dropdown-content">
                 <!-- Reset to Default -->
                 <a
                   title="Reset Proxy for this domain to default one"
                   :class="{
-                    'is-active': isDefaultProxyForDomain(domain, false)
+                    'is-active': isDefaultProxyForDomain(domain, false),
                   }"
                   class="dropdown-item"
                   @click="setDomainProxy(domain, false)"
-                >Reset To Default</a>
+                  >Reset To Default</a
+                >
                 <!-- Stored proxy preferences -->
                 <a
                   v-for="proxy in preferences.proxies"
-                  :class="{
-                    'is-active': isDefaultProxyForDomain(domain, proxy)
-                  }"
                   :key="proxy.id"
+                  :class="{
+                    'is-active': isDefaultProxyForDomain(domain, proxy),
+                  }"
                   class="dropdown-item"
                   @click="setDomainProxy(domain, proxy.id)"
-                >{{ proxy.name }}</a>
+                  >{{ proxy.name }}</a
+                >
               </div>
             </div>
           </div>
         </li>
       </transition-group>
       <p v-show="filteredDomains.length === 0">No requests captured.</p>
-      <br>
     </template>
-    <div class="has-text-centered is-size-7">
+    <!-- <div class="has-text-centered is-size-7">
       <a href="https://github.com/mubaidr" target="_blank">mubaidr@GitHub</a>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -94,7 +97,7 @@ export default {
   computed: {
     filteredDomains() {
       return this.domainList
-        .filter(domain => domain.indexOf(this.domainFilter) > -1)
+        .filter((domain) => domain.indexOf(this.domainFilter) > -1)
         .sort()
     },
   },
@@ -102,6 +105,12 @@ export default {
   created() {
     this.getPreferences()
     this.getDomainList()
+  },
+
+  mounted() {
+    // setTimeout(() => {
+    //   this.$refs.filter.focus()
+    // }, 1000)
   },
 
   methods: {
@@ -118,7 +127,7 @@ export default {
         this.preferences.domainProxyList[domain] ||
         this.preferences.defaultProxy
 
-      return this.preferences.proxies.filter(proxy => proxy.id === proxyId)[0]
+      return this.preferences.proxies.filter((proxy) => proxy.id === proxyId)[0]
         .name
     },
 
@@ -131,9 +140,12 @@ export default {
     },
 
     getPreferences() {
-      chrome.extension.sendMessage({ type: 'getPreferences' }, preferences => {
-        this.$set(this, 'preferences', preferences)
-      })
+      chrome.extension.sendMessage(
+        { type: 'getPreferences' },
+        (preferences) => {
+          this.$set(this, 'preferences', preferences)
+        },
+      )
     },
 
     setPreferences() {
@@ -144,7 +156,7 @@ export default {
     },
 
     getDomainList() {
-      chrome.extension.sendMessage({ type: 'getDomainList' }, domainList => {
+      chrome.extension.sendMessage({ type: 'getDomainList' }, (domainList) => {
         this.domainList = domainList
       })
     },

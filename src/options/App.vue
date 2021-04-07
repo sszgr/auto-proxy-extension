@@ -2,13 +2,23 @@
   <div class="container">
     <div class="section">
       <aside class="menu">
-        <p class="menu-label is-size-5">Proxies
-          <br>
+        <p class="menu-label is-size-5">
+          Proxy List
+          <br />
           <span class="is-size-7">Click to set default proxy.</span>
         </p>
         <template v-if="preferences">
-          <transition-group class="proxies-list" name="list-out" appear tag="ul">
-            <li v-for="proxy in preferences.proxies" :key="proxy.id" class="tags has-addons">
+          <transition-group
+            class="proxies-list"
+            name="list-out"
+            appear
+            tag="ul"
+          >
+            <li
+              v-for="proxy in preferences.proxies"
+              :key="proxy.id"
+              class="tags has-addons"
+            >
               <span
                 :class="{ 'is-primary': isDefault(proxy) }"
                 :title="getProxyTitle(proxy)"
@@ -27,35 +37,54 @@
           </transition-group>
         </template>
       </aside>
-      <br>
+      <br />
       <nav>
-        <p class="menu-label is-size-5">Show
-          <br>
-          <span class="is-size-7">Add domains.</span>
+        <p class="menu-label is-size-5">
+          Domain List for Selected Proxy
+          <br />
+          <span class="is-size-7">View/Update domains.</span>
         </p>
         <div class="panel-block-custom">
           <p class="control">
-            <textarea v-model.trim="domainText" class="textarea" placeholder="Domains" rows="10"></textarea>
+            <textarea
+              v-model.trim="domainText"
+              class="textarea"
+              placeholder="Domains"
+              rows="10"
+            ></textarea>
           </p>
           <p class="control">
-            <a class="button is-primary is-flex" @click="setDomainList">Applay</a>
+            <a class="button is-primary is-flex" @click="setDomainList"
+              >Update</a
+            >
           </p>
         </div>
       </nav>
-      <br>
+      <br />
       <nav>
-        <p class="menu-label is-size-5">New
-          <br>
+        <p class="menu-label is-size-5">
+          New
+          <br />
           <span class="is-size-7">Add proxy.</span>
         </p>
         <div class="panel-block-custom">
           <div class="columns is-mobile">
             <div class="column is-three-fifths">
               <p class="control">
-                <input v-model.trim="proxy.name" class="input" type="text" placeholder="Name">
+                <input
+                  v-model.trim="proxy.name"
+                  class="input"
+                  type="text"
+                  placeholder="Name"
+                />
               </p>
               <p class="control">
-                <input v-model.trim="proxy.address" class="input" type="text" placeholder="Address">
+                <input
+                  v-model.trim="proxy.address"
+                  class="input"
+                  type="text"
+                  placeholder="Address"
+                />
               </p>
             </div>
 
@@ -71,7 +100,12 @@
                 </span>
               </p>
               <p class="control">
-                <input v-model.trim="proxy.port" class="input" type="number" placeholder="Port">
+                <input
+                  v-model.trim="proxy.port"
+                  class="input"
+                  type="number"
+                  placeholder="Port"
+                />
               </p>
             </div>
           </div>
@@ -81,18 +115,20 @@
           </p>
         </div>
       </nav>
-      <br>
+      <br />
       <footer class="footer">
         <div class="container-fluid">
           <div class="content has-text-centered">
             <p>
               <strong>Auto Proxy</strong> by
-              <a href="https://github.com/mubaidr" target="_blank">Muhammad Ubaid Raza</a>.
-              <br>The source code is licensed
+              <a href="https://github.com/mubaidr" target="_blank"
+                >Muhammad Ubaid Raza</a
+              >. <br />The source code is licensed
               <a
                 href="http://opensource.org/licenses/mit-license.php"
                 target="_blank"
-              >MIT</a>.
+                >MIT</a
+              >.
             </p>
           </div>
         </div>
@@ -163,15 +199,13 @@ export default {
     },
 
     getDomainForProxy(proxyId) {
-      if (proxyId === this.preferences.defaultProxy && this.domainText)
-        return
+      if (proxyId === this.preferences.defaultProxy && this.domainText) return
 
       this.domainText = ''
-      if (proxyId === 'direct')
-        return
+      if (proxyId === 'direct') return
 
       let domains = []
-      for (var domain in this.preferences.domainProxyList){
+      for (var domain in this.preferences.domainProxyList) {
         if (this.preferences.domainProxyList[domain] === proxyId) {
           domains.push(domain)
         }
@@ -181,21 +215,27 @@ export default {
     },
 
     setDomainList() {
-      if (this.preferences.defaultProxy === 'direct')
-        return
+      if (this.preferences.defaultProxy === 'direct') return
 
       // clear domain proxy list
       let domains = Object.keys(this.preferences.domainProxyList)
-      domains.forEach(domain => {
-        if (this.preferences.domainProxyList[domain] === this.preferences.defaultProxy) {
+      domains.forEach((domain) => {
+        if (
+          this.preferences.domainProxyList[domain] ===
+          this.preferences.defaultProxy
+        ) {
           delete this.preferences.domainProxyList[domain]
         }
       })
 
       domains = this.domainText.split('\n')
-      for (const index in domains){
+      for (const index in domains) {
         const domain = domains[index]
-        this.$set(this.preferences.domainProxyList, domain.trim(), this.preferences.defaultProxy)
+        this.$set(
+          this.preferences.domainProxyList,
+          domain.trim(),
+          this.preferences.defaultProxy,
+        )
       }
       this.setPreferences()
     },
@@ -205,12 +245,12 @@ export default {
         return
 
       this.preferences.proxies = this.preferences.proxies.filter(
-        p => p.id !== proxy.id,
+        (p) => p.id !== proxy.id,
       )
 
       // clear domain proxy list
       const domains = Object.keys(this.preferences.domainProxyList)
-      domains.forEach(domain => {
+      domains.forEach((domain) => {
         if (this.preferences.domainProxyList[domain] === proxy.id) {
           delete this.preferences.domainProxyList[domain]
         }
@@ -220,10 +260,13 @@ export default {
     },
 
     getPreferences() {
-      chrome.extension.sendMessage({ type: 'getPreferences' }, preferences => {
-        this.preferences = preferences
-        this.getDomainForProxy(this.preferences.defaultProxy)
-      })
+      chrome.extension.sendMessage(
+        { type: 'getPreferences' },
+        (preferences) => {
+          this.preferences = preferences
+          this.getDomainForProxy(this.preferences.defaultProxy)
+        },
+      )
     },
 
     setPreferences() {
