@@ -28,7 +28,22 @@
         </template>
       </aside>
       <br>
-      <nav class="panel">
+      <nav>
+        <p class="menu-label is-size-5">Show
+          <br>
+          <span class="is-size-7">Add domains.</span>
+        </p>
+        <div class="panel-block-custom">
+          <p class="control">
+            <textarea v-model.trim="domainText" class="textarea" placeholder="Domains" rows="10"></textarea>
+          </p>
+          <p class="control">
+            <a class="button is-primary is-flex" @click="setDomainList">Applay</a>
+          </p>
+        </div>
+      </nav>
+      <br>
+      <nav>
         <p class="menu-label is-size-5">New
           <br>
           <span class="is-size-7">Add proxy.</span>
@@ -98,6 +113,7 @@ export default {
         port: '',
         protocol: 'HTTP',
       },
+      domainText: '',
       preferences: null, // { proxies, defaultProxy, domainProxyList }
     }
   },
@@ -122,8 +138,8 @@ export default {
     },
 
     setDefaultProxy(proxy) {
+      this.getDomainForProxy(proxy.id)
       this.preferences.defaultProxy = proxy.id
-
       debounce(this.setPreferences, 250, { trailing: true })()
     },
 
@@ -144,6 +160,44 @@ export default {
       }
 
       debounce(this.setPreferences, 250, { trailing: true })()
+    },
+
+    getDomainForProxy(proxyId) {
+      if (proxyId === this.preferences.defaultProxy && this.domainText)
+        return
+
+      this.domainText = ''
+      if (proxyId === 'direct')
+        return
+
+      let domains = []
+      for (var domain in this.preferences.domainProxyList){
+        if (this.preferences.domainProxyList[domain] === proxyId) {
+          domains.push(domain)
+        }
+      }
+
+      this.domainText = domains.join('\n')
+    },
+
+    setDomainList() {
+      if (this.preferences.defaultProxy === 'direct')
+        return
+
+      // clear domain proxy list
+      let domains = Object.keys(this.preferences.domainProxyList)
+      domains.forEach(domain => {
+        if (this.preferences.domainProxyList[domain] === this.preferences.defaultProxy) {
+          delete this.preferences.domainProxyList[domain]
+        }
+      })
+
+      domains = this.domainText.split('\n')
+      for (const index in domains){
+        const domain = domains[index]
+        this.$set(this.preferences.domainProxyList, domain.trim(), this.preferences.defaultProxy)
+      }
+      this.setPreferences()
     },
 
     deleteProxy(proxy) {
@@ -168,6 +222,7 @@ export default {
     getPreferences() {
       chrome.extension.sendMessage({ type: 'getPreferences' }, preferences => {
         this.preferences = preferences
+        this.getDomainForProxy(this.preferences.defaultProxy)
       })
     },
 
