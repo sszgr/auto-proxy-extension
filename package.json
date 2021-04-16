@@ -2,6 +2,7 @@
   "author": "Muhammad Ubaid Raza <mubaidr@gmail.com>",
   "dependencies": {
     "bulma": "0.8.0",
+    "cnpm": "^6.1.1",
     "lodash.debounce": "^4.0.8",
     "vue": "^2.6.11"
   },
@@ -43,5 +44,5 @@
     "dev": "cross-env NODE_ENV=development webpack --mode development --hide-modules --hot --watch",
     "prettier": "prettier --write \"**/*{.js,.vue}\""
   },
-  "version": "1.2.1"
+  "version": "1.2.2"
 }
